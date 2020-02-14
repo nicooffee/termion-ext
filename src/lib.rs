@@ -33,11 +33,11 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
         let c_v = match c_v{Some(x) => x,None => '│'};
         write!(self,"{}{}",cursor::Goto(x,y),'╭').unwrap();
         self.w_line_h(x+1,y,len_x-2,c_h);
-        write!(self,"╮").unwrap();
+        write!(self,"{}{}",cursor::Goto(x+len_x-1,y),'╮').unwrap();
         self.w_line_v(x,y+1,len_y-2,c_v);
-        write!(self,"{}{}",cursor::Goto(x+len_x,y),'╰').unwrap();
+        write!(self,"{}{}",cursor::Goto(x,y+len_y-1),'╰').unwrap();
         self.w_line_h(x,y+len_y-1,len_x,c_h);
-        write!(self,"{}{}",cursor::Goto(x+len_x,y+len_y),'╯').unwrap();
+        write!(self,"{}{}",cursor::Goto(x+len_x-1,y+len_y-1),'╯').unwrap();
         self.w_line_v(x+len_x-1,y,len_y,c_v);
     }
 }       
