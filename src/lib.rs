@@ -31,8 +31,8 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
     fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>){
         let c_h = match c_h{Some(x) => x,None => '―'};
         let c_v = match c_v{Some(x) => x,None => '│'};
-        self.w_line_h(x+1,y,len_x-2,c_h);
-        self.w_line_v(x,y+1,len_y-2,c_v);
+        self.w_line_h(x,y,len_x,c_h);
+        self.w_line_v(x,y,len_y,c_v);
         self.w_line_h(x,y+len_y-1,len_x,c_h);
         self.w_line_v(x+len_x-1,y,len_y,c_v);
         write!(self,"{}{}",cursor::Goto(x,y),'╭').unwrap();
