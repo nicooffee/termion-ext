@@ -7,7 +7,7 @@ use termion::{cursor};
 pub trait AdvWrite {
     fn w_line_h(&mut self,x: u16,y: u16,n: u16,c: char) ;
     fn w_line_v(&mut self,x: u16,y: u16,n: u16,c: char) ;
-    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: char,c_v: Option<char>);
+    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>);
 }
 impl<W: Write> AdvWrite for AlternateScreen<W>{
     
@@ -28,12 +28,21 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
         }
     }
     
-    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: char,c_v: Option<char>){
-        let c = match c_v{Some(x) => x,None => c_h};
-        self.w_line_h(x,y,len_x,c_h);
-        self.w_line_v(x,y,len_y,c);
+    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>){
+        let c_h = match c_h{Some(x) => x,None => '―'};
+        let c_v = match c_v{Some(x) => x,None => '│'};
+        write!(self,"{}{}",cursor::Goto(x,y),'╭').unwrap();
+        self.w_line_h(x+1,y,len_x-2,c_h);
+        write!(self,"╮").unwrap();
+        self.w_line_v(x,y+1,len_y-2,c_v);
+        write!(self,"{}{}",cursor::Goto(x+len_x,y),'╰').unwrap();
         self.w_line_h(x,y+len_y-1,len_x,c_h);
-        self.w_line_v(x+len_x-1,y,len_y,c);
+        write!(self,"{}{}",cursor::Goto(x+len_x,y+len_y),'╯').unwrap();
+        self.w_line_v(x+len_x-1,y,len_y,c_v);
     }
-}
-    
+}       
+/*
+     ╭――╮  
+     │  │
+     ╰——╯
+*/
