@@ -8,8 +8,8 @@ use termion::{cursor,color};
 pub trait AdvWrite {
     fn w_go_str(&mut self,x:u16,y:u16,string: String);
     fn w_str_go(&mut self,x:u16,y:u16,string: String);
-    fn w_go_str_color<T,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>);
-    fn w_str_go_color<T,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>);
+    fn w_go_str_color<T: color::Color,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>);
+    fn w_str_go_color<T: color::Color,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>);
     fn w_line_h(&mut self,x: u16,y: u16,n: u16,c: char) ;
     fn w_line_v(&mut self,x: u16,y: u16,n: u16,c: char) ;
     fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>);
@@ -30,7 +30,7 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
     }
     
 
-    fn w_go_str_color<T: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<T>){
+    fn w_go_str_color<T: color::Color,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>){
         if let Some(color) = fg {self.w_set_fg(color)};
         if let Some(color) = bg {self.w_set_bg(color)};
         self.w_go_str(x,y,string);
@@ -38,7 +38,7 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
     }
 
 
-    fn w_str_go_color<T: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<T>){
+    fn w_str_go_color<T: color::Color,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: Option<T>,bg: Option<Q>){
         if let Some(color) = fg {self.w_set_fg(color)};
         if let Some(color) = bg {self.w_set_bg(color)};
         self.w_str_go(x,y,string);
