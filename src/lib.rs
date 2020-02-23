@@ -12,7 +12,7 @@ pub trait AdvWrite {
     fn w_str_go_color<T: color::Color,Q: color::Color>(&mut self,x:u16,y:u16,string: String,fg: T,bg: Q);
     fn w_line_h(&mut self,x: u16,y: u16,n: u16,c: char) ;
     fn w_line_v(&mut self,x: u16,y: u16,n: u16,c: char) ;
-    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>);
+    fn w_box(&mut self,min_x: u16,min_y: u16,max_x: u16, max_y: u16,c_h: Option<char>,c_v: Option<char>);
     fn w_set_fg<T: color::Color>(&mut self,c: T);
     fn w_set_bg<T: color::Color>(&mut self,c: T);
     fn w_reset_color(&mut self);
@@ -67,17 +67,17 @@ impl<W: Write> AdvWrite for AlternateScreen<W>{
     }
     
 
-    fn w_box(&mut self,x: u16,y: u16,len_x: u16, len_y: u16,c_h: Option<char>,c_v: Option<char>){
+    fn w_box(&mut self,min_x: u16,min_y: u16,max_x: u16, max_y: u16,c_h: Option<char>,c_v: Option<char>){
         let c_h = match c_h{Some(x) => x,None => '─'};//―
         let c_v = match c_v{Some(x) => x,None => '│'};//│
-        self.w_line_h(x,y,len_x,c_h);
-        self.w_line_v(x,y,len_y,c_v);
-        self.w_line_h(x,y+len_y-1,len_x,c_h);
-        self.w_line_v(x+len_x-1,y,len_y,c_v);
-        write!(self,"{}{}",cursor::Goto(x,y),'┌').unwrap(); //╭
-        write!(self,"{}{}",cursor::Goto(x+len_x-1,y),'┐').unwrap();//╮
-        write!(self,"{}{}",cursor::Goto(x,y+len_y-1),'└').unwrap();//╰
-        write!(self,"{}{}",cursor::Goto(x+len_x-1,y+len_y-1),'┘').unwrap();//╯
+        self.w_line_h(min_x,min_y,max_x-min_x+1,c_h);
+        self.w_line_v(min_x,min_y,max_y-min_y+1,c_v);
+        self.w_line_h(min_x,max_y,max_x-min_x+1,c_h);
+        self.w_line_v(max_x,min_y,max_y-min_y+1,c_v);
+        write!(self,"{}{}",cursor::Goto(min_x,min_y),'┌').unwrap(); //╭
+        write!(self,"{}{}",cursor::Goto(max_x,min_y),'┐').unwrap();//╮
+        write!(self,"{}{}",cursor::Goto(min_x,max_y),'└').unwrap();//╰
+        write!(self,"{}{}",cursor::Goto(max_x,max_y),'┘').unwrap();//╯
     }
 
     
